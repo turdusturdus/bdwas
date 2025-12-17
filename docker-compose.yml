@@ -1,0 +1,27 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: bdwas_mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: football_app
+    volumes:
+      - mongo_data:/data/db
+      - ./infra/mongo/init:/docker-entrypoint-initdb.d:ro
+
+  web:
+    build: .
+    container_name: bdwas_web
+    ports:
+      - "8000:8000"
+    environment:
+      DATA_BACKEND: mongo
+      MONGO_URI: mongodb://mongo:27017
+      MONGO_DB: football_app
+      DJANGO_SETTINGS_MODULE: league_manager.settings
+    depends_on:
+      - mongo
+
+volumes:
+  mongo_data:

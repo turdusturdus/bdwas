@@ -1,5 +1,5 @@
 import inspect
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, MagicMock, patch
 
 from django.test import SimpleTestCase, override_settings
 
@@ -59,17 +59,26 @@ class AdapterReadinessTests(SimpleTestCase):
 
     def test_postgres_and_mongo_adapters_exist_and_are_stubs(self):
         """
-        Gotowość do adapterów = są klasy adapterów i da się je importować/instancjować.
-        Na razie mogą rzucać NotImplementedError.
+        Gotowość do adapterów:
+        - Postgres nadal może być stubem (NotImplementedError)
+        - MongoAdapter ma działać, ale w teście nie wolno łączyć się po sieci.
+        Więc patchujemy MongoClient i sprawdzamy, że metody da się wywołać.
         """
         pg = PostgresAdapter(dsn="postgresql://example")
-        mg = MongoAdapter(uri="mongodb://example", db_name="db")
 
         with self.assertRaises(NotImplementedError):
             pg.list_leagues()
 
-        with self.assertRaises(NotImplementedError):
-            mg.list_leagues()
+        import core.repositories.adapters.mongo as mongo_mod
+
+        fake_db = Mock()
+        fake_db.leagues.aggregate.return_value = []  # list_leagues -> []
+        fake_client = MagicMock()
+        fake_client.__getitem__.return_value = fake_db  # client[db_name] -> fake_db
+
+        with patch.object(mongo_mod, "MongoClient", return_value=fake_client):
+            mg = MongoAdapter(uri="mongodb://example", db_name="db")
+            self.assertEqual(mg.list_leagues(), [])
 
     @override_settings(DATA_BACKEND="mock")
     def test_admin_views_call_repo_methods_not_inline_logic(self):

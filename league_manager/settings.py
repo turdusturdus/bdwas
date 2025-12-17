@@ -2,7 +2,6 @@ import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 SECRET_KEY = "dev-secret-key"
 DEBUG = True
 ALLOWED_HOSTS = ["*"]
@@ -47,18 +46,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "league_manager.wsgi.application"
 
-# ------------------------
-# Adapter switch (kluczowe pod integrację)
-# ------------------------
-# mock | postgres | mongo
 DATA_BACKEND = os.getenv("DATA_BACKEND", "mock").lower()
-
-# Konfiguracje pod przyszłe adaptery (na razie nieużywane)
-POSTGRES_DSN = os.getenv("POSTGRES_DSN", "")
 MONGO_URI = os.getenv("MONGO_URI", "")
 MONGO_DB = os.getenv("MONGO_DB", "")
 
-# Na razie sqlite (statyki/moki). Integracja z domenową bazą przez adaptery.
+# żeby Docker nie wymagał sqlite na sesje:
+SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -67,7 +61,6 @@ DATABASES = {
 }
 
 AUTH_PASSWORD_VALIDATORS = []
-
 LANGUAGE_CODE = "pl"
 TIME_ZONE = "Europe/Warsaw"
 USE_I18N = True
@@ -75,5 +68,4 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
-
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
