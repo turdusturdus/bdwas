@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -46,7 +47,18 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "league_manager.wsgi.application"
 
-# Na razie sqlite (statyki/moki). Później podmienisz na Postgres/adapters.
+# ------------------------
+# Adapter switch (kluczowe pod integrację)
+# ------------------------
+# mock | postgres | mongo
+DATA_BACKEND = os.getenv("DATA_BACKEND", "mock").lower()
+
+# Konfiguracje pod przyszłe adaptery (na razie nieużywane)
+POSTGRES_DSN = os.getenv("POSTGRES_DSN", "")
+MONGO_URI = os.getenv("MONGO_URI", "")
+MONGO_DB = os.getenv("MONGO_DB", "")
+
+# Na razie sqlite (statyki/moki). Integracja z domenową bazą przez adaptery.
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
