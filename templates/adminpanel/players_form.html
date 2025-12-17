@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Admin • Zawodnik{% endblock %}
+{% block content %}
+<h1>Admin • {% if item %}Edytuj zawodnika{% else %}Dodaj zawodnika{% endif %}</h1>
+<form method="post" class="card form">
+  {% csrf_token %}
+  <label>Imię i nazwisko</label>
+  <input name="name" value="{{ item.name|default:'' }}">
+  <label>Pozycja</label>
+  <input name="position" value="{{ item.position|default:'' }}">
+  <label>Narodowość</label>
+  <input name="nationality" value="{{ item.nationality|default:'' }}">
+  <button type="submit">Zapisz (atrapa)</button>
+  <a class="pill" href="{% url 'admin_players_list' %}">Wróć</a>
+</form>
+{% endblock %}

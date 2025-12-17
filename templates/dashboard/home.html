@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<h1>Dashboard</h1>
+<div class="grid">
+  <div class="card">Ligi: <b>{{ counts.leagues }}</b></div>
+  <div class="card">Drużyny: <b>{{ counts.teams }}</b></div>
+  <div class="card">Zawodnicy: <b>{{ counts.players }}</b></div>
+  <div class="card">Mecze: <b>{{ counts.matches }}</b></div>
+</div>
+<p class="muted">To są statyki na mockach. Później podmienisz repo na adapter do bazy.</p>
+{% endblock %}

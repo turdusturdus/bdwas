@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Mecze{% endblock %}
+{% block content %}
+<h1>Mecze</h1>
+
+<form method="get" class="row">
+  <input name="q" value="{{ q|default:'' }}" placeholder="(na razie atrapa wyszukiwania meczów)">
+  <button type="submit">Szukaj</button>
+</form>
+
+<div class="card">
+  <table>
+    <thead><tr><th>ID</th><th>Data</th><th>Kolejka</th><th>Mecz</th><th></th></tr></thead>
+    <tbody>
+    {% for m in items %}
+      <tr>
+        <td>{{ m.id }}</td>
+        <td>{{ m.utc_date }}</td>
+        <td>{{ m.matchday }}</td>
+        <td>{{ m.label }}</td>
+        <td><a href="{% url 'match_detail' m.id %}">Szczegóły</a></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

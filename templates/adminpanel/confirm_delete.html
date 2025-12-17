@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Usuń{% endblock %}
+{% block content %}
+<h1>Usuń: {{ entity }}</h1>
+<div class="card">
+  <p>Czy na pewno chcesz usunąć: <b>{{ item.name|default:item.id }}</b> ?</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Tak, usuń (atrapa)</button>
+    <a class="pill" href="{% url back_url %}">Anuluj</a>
+  </form>
+</div>
+{% endblock %}

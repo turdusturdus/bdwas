@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Zawodnik{% endblock %}
+{% block content %}
+<h1>{{ player.name }}</h1>
+<div class="grid">
+  <div class="card">Pozycja: <b>{{ player.position }}</b></div>
+  <div class="card">Narodowość: <b>{{ player.nationality }}</b></div>
+  <div class="card">Drużyna: <b>{{ team.name }}</b></div>
+</div>
+{% endblock %}

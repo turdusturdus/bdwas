@@ -1,0 +1,22 @@
+<nav class="nav">
+  <div class="container nav-row">
+    <div class="brand"><a href="{% url 'home' %}">Liga Sportowa</a></div>
+    <div class="links">
+      <a href="{% url 'leagues_list' %}">Ligi</a>
+      <a href="{% url 'teams_list' %}">Drużyny</a>
+      <a href="{% url 'players_list' %}">Zawodnicy</a>
+      <a href="{% url 'matches_list' %}">Mecze</a>
+      {% if role == "admin" %}
+        <a class="pill" href="{% url 'admin_index' %}">Panel admina</a>
+      {% endif %}
+    </div>
+    <div class="auth">
+      <span class="muted">rola: {{ role }}</span>
+      {% if role == "guest" %}
+        <a class="pill" href="{% url 'login' %}">Zaloguj</a>
+      {% else %}
+        <a class="pill" href="{% url 'logout' %}">Wyloguj</a>
+      {% endif %}
+    </div>
+  </div>
+</nav>

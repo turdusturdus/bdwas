@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Admin • Liga{% endblock %}
+{% block content %}
+<h1>Admin • {% if item %}Edytuj ligę{% else %}Dodaj ligę{% endif %}</h1>
+<form method="post" class="card form">
+  {% csrf_token %}
+  <label>Nazwa</label>
+  <input name="name" value="{{ item.name|default:'' }}" placeholder="np. Ekstraklasa">
+  <label>Kraj</label>
+  <input name="country" value="{{ item.country|default:'' }}" placeholder="np. Polska">
+  <button type="submit">Zapisz (atrapa)</button>
+  <a class="pill" href="{% url 'admin_leagues_list' %}">Wróć</a>
+</form>
+{% endblock %}

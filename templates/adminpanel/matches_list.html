@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Admin • Mecze{% endblock %}
+{% block content %}
+<h1>Admin • Mecze</h1>
+<a class="pill" href="{% url 'admin_matches_new' %}">+ Dodaj mecz</a>
+<div class="card">
+  <table>
+    <thead><tr><th>ID</th><th>Data</th><th>Kolejka</th><th>Mecz</th><th></th></tr></thead>
+    <tbody>
+    {% for m in items %}
+      <tr>
+        <td>{{ m.id }}</td>
+        <td>{{ m.utc_date }}</td>
+        <td>{{ m.matchday }}</td>
+        <td>{{ m.label }}</td>
+        <td>
+          <a href="{% url 'admin_matches_edit' m.id %}">Edytuj</a> |
+          <a href="{% url 'admin_matches_delete' m.id %}">Usuń</a>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

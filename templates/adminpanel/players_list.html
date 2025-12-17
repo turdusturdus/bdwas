@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Admin • Zawodnicy{% endblock %}
+{% block content %}
+<h1>Admin • Zawodnicy</h1>
+<a class="pill" href="{% url 'admin_players_new' %}">+ Dodaj zawodnika</a>
+<div class="card">
+  <table>
+    <thead><tr><th>ID</th><th>Imię i nazwisko</th><th>Pozycja</th><th>Kraj</th><th></th></tr></thead>
+    <tbody>
+    {% for p in items %}
+      <tr>
+        <td>{{ p.id }}</td>
+        <td>{{ p.name }}</td>
+        <td>{{ p.position }}</td>
+        <td>{{ p.nationality }}</td>
+        <td>
+          <a href="{% url 'admin_players_edit' p.id %}">Edytuj</a> |
+          <a href="{% url 'admin_players_delete' p.id %}">Usuń</a>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

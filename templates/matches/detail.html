@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Szczegóły meczu{% endblock %}
+{% block content %}
+<h1>{{ home.name }} vs {{ away.name }}</h1>
+<p class="muted">Data: {{ match.utc_date }} • Kolejka: {{ match.matchday }} • Sezon: {{ match.season }}</p>
+
+<div class="grid">
+  <div class="card">
+    <div class="muted">Do przerwy</div>
+    <div class="big">{{ match.score.half_time.home }} : {{ match.score.half_time.away }}</div>
+  </div>
+  <div class="card">
+    <div class="muted">Koniec</div>
+    <div class="big">{{ match.score.full_time.home }} : {{ match.score.full_time.away }}</div>
+  </div>
+</div>
+
+<h2>Statystyki (JSON – później z bazy)</h2>
+<div class="card">
+  <pre>{{ match.statistics }}</pre>
+</div>
+
+<h2>Sędziowie</h2>
+<div class="card">
+  <ul>
+    {% for r in match.referees %}
+      <li>{{ r.name }} ({{ r.role }})</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

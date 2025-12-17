@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Admin • Drużyna{% endblock %}
+{% block content %}
+<h1>Admin • {% if item %}Edytuj drużynę{% else %}Dodaj drużynę{% endif %}</h1>
+<form method="post" class="card form">
+  {% csrf_token %}
+  <label>Nazwa</label>
+  <input name="name" value="{{ item.name|default:'' }}">
+  <label>Rok założenia</label>
+  <input name="founded_year" value="{{ item.founded_year|default:'' }}">
+  <label>Trener</label>
+  <input name="coach" value="{{ item.coach|default:'' }}">
+  <label>Stadion</label>
+  <input name="stadium" value="{{ item.stadium|default:'' }}">
+  <button type="submit">Zapisz (atrapa)</button>
+  <a class="pill" href="{% url 'admin_teams_list' %}">Wróć</a>
+</form>
+{% endblock %}

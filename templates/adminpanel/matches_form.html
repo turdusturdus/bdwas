@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Admin • Mecz{% endblock %}
+{% block content %}
+<h1>Admin • {% if item %}Edytuj mecz{% else %}Dodaj mecz{% endif %}</h1>
+<form method="post" class="card form">
+  {% csrf_token %}
+  <label>Data (YYYY-MM-DD)</label>
+  <input name="utc_date" value="{{ item.utc_date|default:'' }}">
+  <label>Kolejka</label>
+  <input name="matchday" value="{{ item.matchday|default:'' }}">
+  <label>Opis (atrapa)</label>
+  <input name="label" value="">
+  <button type="submit">Zapisz (atrapa)</button>
+  <a class="pill" href="{% url 'admin_matches_list' %}">Wróć</a>
+</form>
+{% endblock %}

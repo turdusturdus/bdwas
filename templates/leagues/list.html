@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Ligi{% endblock %}
+{% block content %}
+<h1>Ligi</h1>
+
+<form method="get" class="row">
+  <input name="q" value="{{ q|default:'' }}" placeholder="Szukaj (nazwa/kraj)...">
+  <button type="submit">Szukaj</button>
+</form>
+
+<div class="card">
+  <table>
+    <thead><tr><th>ID</th><th>Nazwa</th><th>Kraj</th><th></th></tr></thead>
+    <tbody>
+    {% for l in items %}
+      <tr>
+        <td>{{ l.id }}</td>
+        <td>{{ l.name }}</td>
+        <td>{{ l.country }}</td>
+        <td><a href="{% url 'league_detail' l.id %}">Szczegóły</a></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Admin • Ligi{% endblock %}
+{% block content %}
+<h1>Admin • Ligi</h1>
+<a class="pill" href="{% url 'admin_leagues_new' %}">+ Dodaj ligę</a>
+<div class="card">
+  <table>
+    <thead><tr><th>ID</th><th>Nazwa</th><th>Kraj</th><th></th></tr></thead>
+    <tbody>
+    {% for l in items %}
+      <tr>
+        <td>{{ l.id }}</td>
+        <td>{{ l.name }}</td>
+        <td>{{ l.country }}</td>
+        <td>
+          <a href="{% url 'admin_leagues_edit' l.id %}">Edytuj</a> |
+          <a href="{% url 'admin_leagues_delete' l.id %}">Usuń</a>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
