@@ -10,18 +10,55 @@ services:
       - mongo_data:/data/db
       - ./infra/mongo/init:/docker-entrypoint-initdb.d:ro
 
+  postgres:
+    image: postgres:15-alpine
+    container_name: bdwas_postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: football_app
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/postgres/init:/docker-entrypoint-initdb.d:ro
+
+  mysql:
+      image: mysql:8.0
+      container_name: bdwas_mysql
+      ports:
+        - "3306:3306"
+      environment:
+        MYSQL_DATABASE: football_app
+        MYSQL_USER: user
+        MYSQL_PASSWORD: password
+        MYSQL_ROOT_PASSWORD: root
+      volumes:
+        - mysql_data:/var/lib/mysql
+        - ./infra/mysql/init:/docker-entrypoint-initdb.d:ro
+      command: --default-authentication-plugin=mysql_native_password
+
   web:
     build: .
     container_name: bdwas_web
     ports:
       - "8000:8000"
     environment:
-      DATA_BACKEND: mongo
+      DATA_BACKEND: mysql
+      MYSQL_URI: "mysql://user:password@mysql:3306/football_app"
+
+      POSTGRES_DSN: "postgresql://user:password@postgres:5432/football_app"
       MONGO_URI: mongodb://mongo:27017
       MONGO_DB: football_app
       DJANGO_SETTINGS_MODULE: league_manager.settings
+    volumes:
+      - .:/app
     depends_on:
       - mongo
+      - postgres
+      - mysql
 
 volumes:
   mongo_data:
+  postgres_data:
+  mysql_data:
