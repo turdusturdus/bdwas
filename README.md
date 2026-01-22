@@ -47,3 +47,24 @@ rm -f core/tests.py
 ## Uwaga: permission denied do docker.sock
 Jeśli uruchamiasz `docker exec ...` bez `sudo` i masz błąd `permission denied`,
 to używaj `sudo docker ...` albo dodaj usera do grupy `docker`.
+
+## Benchmark wydajności baz danych
+
+### Przygotowanie
+1. Upewnij się, że kontenery baz danych są uruchomione w trybie odłączonym:
+   ```bash
+   docker compose up -d postgres mysql mongo
+   ```
+
+2. Sprawdź, czy bazy danych są gotowe do użycia:
+   ```bash
+   docker compose up -d postgres mysql mongo
+   ```
+
+### Uruchomienie benchmarku
+Aby uruchomić benchmark porównujący wydajność baz danych, wykonaj poniższe polecenie:
+```bash
+docker compose exec web python bench.py > results.csv
+```
+
+Wyniki benchmarku zostaną wyświetlone w terminalu.
