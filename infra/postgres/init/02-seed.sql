@@ -120,3 +120,17 @@ VALUES
 (4, 100, 12, 4, 1, 0, 0, 1, 0, 1, 3, -2, ARRAY['L']),
 (5, 101, 20, 1, 1, 1, 0, 0, 3, 2, 0, 2, ARRAY['W']),
 (6, 101, 21, 2, 1, 0, 0, 1, 0, 0, 2, -2, ARRAY['L']);
+
+SELECT setval('public.countries_country_id_seq', (SELECT MAX(country_id) FROM public.countries));
+SELECT setval('public.stadiums_stadium_id_seq', (SELECT MAX(stadium_id) FROM public.stadiums));
+SELECT setval('public.users_user_id_seq', (SELECT MAX(user_id) FROM public.users));
+SELECT setval('public.coaches_coach_id_seq', (SELECT MAX(coach_id) FROM public.coaches));
+SELECT setval('public.referees_referee_id_seq', (SELECT MAX(referee_id) FROM public.referees));
+SELECT setval('public.leagues_league_id_seq', (SELECT MAX(league_id) FROM public.leagues));
+SELECT setval('public.seasons_season_id_seq', (SELECT MAX(season_id) FROM public.seasons));
+SELECT setval('public.teams_team_id_seq', (SELECT MAX(team_id) FROM public.teams));
+SELECT setval('public.players_player_id_seq', (SELECT MAX(player_id) FROM public.players));
+SELECT setval('public.matches_match_id_seq', (SELECT MAX(match_id) FROM public.matches));
+SELECT setval('public.scores_score_id_seq', (SELECT MAX(score_id) FROM public.scores));
+SELECT setval('public.standings_standing_id_seq', (SELECT MAX(standing_id) FROM public.standings));
+SELECT setval('public.scorers_scorer_id_seq', (SELECT MAX(scorer_id) FROM public.scorers));

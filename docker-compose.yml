@@ -44,7 +44,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      DATA_BACKEND: mysql
+      DATA_BACKEND: postgres
       MYSQL_URI: "mysql://user:password@mysql:3306/football_app"
 
       POSTGRES_DSN: "postgresql://user:password@postgres:5432/football_app"

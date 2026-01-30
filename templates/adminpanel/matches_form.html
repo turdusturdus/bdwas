@@ -4,13 +4,40 @@
 <h1>Admin • {% if item %}Edytuj mecz{% else %}Dodaj mecz{% endif %}</h1>
 <form method="post" class="card form">
   {% csrf_token %}
-  <label>Data (YYYY-MM-DD)</label>
-  <input name="utc_date" value="{{ item.utc_date|default:'' }}">
+
+  <label>Data meczu</label>
+  <input name="utc_date" type="date" value="{{ item.utc_date|default:'' }}" required>
+
   <label>Kolejka</label>
-  <input name="matchday" value="{{ item.matchday|default:'' }}">
-  <label>Opis (atrapa)</label>
-  <input name="label" value="">
-  <button type="submit">Zapisz (atrapa)</button>
-  <a class="pill" href="{% url 'admin_matches_list' %}">Wróć</a>
+  <input name="matchday" type="number" min="1" max="50" value="{{ item.matchday|default:'1' }}" placeholder="np. 1" required>
+
+  <label>Drużyna gospodarzy</label>
+  <select name="home_team_id" required>
+    <option value="">-- Wybierz drużynę --</option>
+    {% for t in teams %}
+      <option value="{{ t.id }}" {% if item.home_team_id == t.id|stringformat:'s' %}selected{% endif %}>{{ t.name }}</option>
+    {% endfor %}
+  </select>
+
+  <label>Drużyna gości</label>
+  <select name="away_team_id" required>
+    <option value="">-- Wybierz drużynę --</option>
+    {% for t in teams %}
+      <option value="{{ t.id }}" {% if item.away_team_id == t.id|stringformat:'s' %}selected{% endif %}>{{ t.name }}</option>
+    {% endfor %}
+  </select>
+
+  <label>Sezon</label>
+  <select name="season_id" required>
+    <option value="">-- Wybierz sezon --</option>
+    {% for s in seasons %}
+      <option value="{{ s.id }}" {% if item.season == s.year %}selected{% endif %}>{{ s.year }} - {{ s.league_name }}</option>
+    {% endfor %}
+  </select>
+
+  <div class="form-actions">
+    <button type="submit">Zapisz</button>
+    <a class="pill" href="{% url 'admin_matches_list' %}">Wróć</a>
+  </div>
 </form>
 {% endblock %}

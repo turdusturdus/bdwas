@@ -5,17 +5,17 @@
 <a class="pill" href="{% url 'admin_teams_new' %}">+ Dodaj drużynę</a>
 <div class="card">
   <table>
-    <thead><tr><th>ID</th><th>Nazwa</th><th>Trener</th><th>Stadion</th><th></th></tr></thead>
+    <thead><tr><th>ID</th><th>Nazwa</th><th>Trener</th><th>Stadion</th><th class="actions-col">Akcje</th></tr></thead>
     <tbody>
     {% for t in items %}
       <tr>
         <td>{{ t.id }}</td>
         <td>{{ t.name }}</td>
-        <td>{{ t.coach }}</td>
-        <td>{{ t.stadium }}</td>
-        <td>
-          <a href="{% url 'admin_teams_edit' t.id %}">Edytuj</a> |
-          <a href="{% url 'admin_teams_delete' t.id %}">Usuń</a>
+        <td>{{ t.coach|default:"-" }}</td>
+        <td>{{ t.stadium|default:"-" }}</td>
+        <td class="actions-cell">
+          <a class="btn-action btn-edit" href="{% url 'admin_teams_edit' t.id %}">Edytuj</a>
+          <a class="btn-action btn-delete" href="{% url 'admin_teams_delete' t.id %}">Usuń</a>
         </td>
       </tr>
     {% endfor %}

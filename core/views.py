@@ -41,7 +41,7 @@ def league_detail(request, league_id: str):
     repo = get_repo()
     league = repo.get_league(league_id)
     if not league: return error_404(request)
-    teams = [t for t in repo.list_teams() if t.get("league_id") == league_id]
+    teams = [t for t in repo.list_teams() if str(t.get("league_id")) == str(league_id)]
     return render(request, "leagues/detail.html", {"role": get_role(request), "league": league, "teams": teams})
 
 def teams_list(request):
@@ -95,11 +95,16 @@ def admin_leagues_form(request, league_id=None):
     repo = get_repo()
     if not require_admin(request): return error_403(request)
     item = repo.get_league(league_id) if league_id else None
+    countries = repo.list_countries()
     if request.method == "POST":
         if league_id: repo.update_league(league_id, request.POST)
         else: repo.create_league(request.POST)
         return redirect("admin_leagues_list")
-    return render(request, "adminpanel/leagues_form.html", {"role": get_role(request), "item": item})
+    return render(request, "adminpanel/leagues_form.html", {
+        "role": get_role(request), 
+        "item": item,
+        "countries": countries
+    })
 
 def admin_leagues_delete(request, league_id: str):
     repo = get_repo()
@@ -119,11 +124,18 @@ def admin_teams_form(request, team_id=None):
     repo = get_repo()
     if not require_admin(request): return error_403(request)
     item = repo.get_team(team_id) if team_id else None
+    coaches = repo.list_coaches()
+    stadiums = repo.list_stadiums()
     if request.method == "POST":
         if team_id: repo.update_team(team_id, request.POST)
         else: repo.create_team(request.POST)
         return redirect("admin_teams_list")
-    return render(request, "adminpanel/teams_form.html", {"role": get_role(request), "item": item})
+    return render(request, "adminpanel/teams_form.html", {
+        "role": get_role(request), 
+        "item": item,
+        "coaches": coaches,
+        "stadiums": stadiums
+    })
 
 def admin_teams_delete(request, team_id: str):
     repo = get_repo()
@@ -143,11 +155,18 @@ def admin_players_form(request, player_id=None):
     repo = get_repo()
     if not require_admin(request): return error_403(request)
     item = repo.get_player(player_id) if player_id else None
+    teams = repo.list_teams()
+    countries = repo.list_countries()
     if request.method == "POST":
         if player_id: repo.update_player(player_id, request.POST)
         else: repo.create_player(request.POST)
         return redirect("admin_players_list")
-    return render(request, "adminpanel/players_form.html", {"role": get_role(request), "item": item})
+    return render(request, "adminpanel/players_form.html", {
+        "role": get_role(request), 
+        "item": item,
+        "teams": teams,
+        "countries": countries
+    })
 
 def admin_players_delete(request, player_id: str):
     repo = get_repo()
@@ -167,11 +186,18 @@ def admin_matches_form(request, match_id=None):
     repo = get_repo()
     if not require_admin(request): return error_403(request)
     item = repo.get_match(match_id) if match_id else None
+    teams = repo.list_teams()
+    seasons = repo.list_seasons()
     if request.method == "POST":
         if match_id: repo.update_match(match_id, request.POST)
         else: repo.create_match(request.POST)
         return redirect("admin_matches_list")
-    return render(request, "adminpanel/matches_form.html", {"role": get_role(request), "item": item})
+    return render(request, "adminpanel/matches_form.html", {
+        "role": get_role(request), 
+        "item": item,
+        "teams": teams,
+        "seasons": seasons
+    })
 
 def admin_matches_delete(request, match_id: str):
     repo = get_repo()

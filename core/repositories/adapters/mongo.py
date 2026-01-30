@@ -204,19 +204,230 @@ class MongoAdapter(LeagueRepo):
     def match_label(self, match: Mapping[str, Any]) -> str:
         return str(match.get("label") or "")
 
-    # ---- CRUD (opcjonalnie później) ----
-    def create_league(self, data: Payload): raise NotImplementedError
-    def update_league(self, league_id: str, data: Payload): raise NotImplementedError
-    def delete_league(self, league_id: str) -> bool: raise NotImplementedError
 
-    def create_team(self, data: Payload): raise NotImplementedError
-    def update_team(self, team_id: str, data: Payload): raise NotImplementedError
-    def delete_team(self, team_id: str) -> bool: raise NotImplementedError
+    def create_league(self, data: Payload):
+        country_id = data.get("country_id")
+        doc = {
+            "name": data.get("name"),
+            "countryId": oid(country_id) if country_id else None,
+            "iconUrl": data.get("icon_url", ""),
+            "europeanSpots": {
+                "championsLeague": int(data.get("cl_spot") or 0),
+                "europaLeague": int(data.get("uel_spot") or 0),
+                "relegation": int(data.get("relegation_spot") or 0),
+            },
+        }
+        res = self.db.leagues.insert_one(doc)
+        return {**data, "id": str(res.inserted_id)}
 
-    def create_player(self, data: Payload): raise NotImplementedError
-    def update_player(self, player_id: str, data: Payload): raise NotImplementedError
-    def delete_player(self, player_id: str) -> bool: raise NotImplementedError
+    def update_league(self, league_id: str, data: Payload):
+        country_id = data.get("country_id")
+        update = {
+            "name": data.get("name"),
+            "countryId": oid(country_id) if country_id else None,
 
-    def create_match(self, data: Payload): raise NotImplementedError
-    def update_match(self, match_id: str, data: Payload): raise NotImplementedError
-    def delete_match(self, match_id: str) -> bool: raise NotImplementedError
+        }
+
+        self.db.leagues.update_one(
+            {"_id": oid(league_id)},
+            {"$set": update}
+        )
+        return self.get_league(league_id)
+
+    def delete_league(self, league_id: str) -> bool:
+        self.db.leagues.delete_one({"_id": oid(league_id)})
+        return True
+
+    def create_team(self, data: Payload):
+        stadium_name = data.get("stadium_id")
+        coach_name = data.get("coach_id")
+        
+        stadium_doc = {"name": stadium_name or "Unknown", "location": "Unknown", "capacity": 0}
+        
+        # Get default nationality if needed
+        first_country = self.db.countries.find_one()
+        default_nat_id = first_country["_id"] if first_country else None
+        
+        coach_doc = {"name": coach_name or "Unknown", "nationalityId": default_nat_id}
+
+        # Inherit details if stadium/coach exists in another team
+        if stadium_name:
+            existing = self.db.teams.find_one({"stadium.name": stadium_name}, {"stadium": 1})
+            if existing:
+                stadium_doc = existing.get("stadium", stadium_doc)
+
+        if coach_name:
+            existing = self.db.teams.find_one({"coach.name": coach_name}, {"coach": 1})
+            if existing:
+                coach_doc = existing.get("coach", coach_doc)
+
+        doc = {
+            "name": data.get("name"),
+            "foundedYear": int(data.get("founded_year") or 1900),
+            "crestUrl": "",
+            "countryId": default_nat_id,
+            "leagueId": oid(data.get("league_id")) if data.get("league_id") else None,
+            "stadium": stadium_doc,
+            "coach": coach_doc
+        }
+        
+        # Infer countryId from league if possible
+        if doc["leagueId"]:
+            league = self.db.leagues.find_one({"_id": doc["leagueId"]})
+            if league:
+                doc["countryId"] = league.get("countryId")
+
+        res = self.db.teams.insert_one(doc)
+        return {**data, "id": str(res.inserted_id)}
+
+    def update_team(self, team_id: str, data: Payload):
+        stadium_name = data.get("stadium_id")
+        coach_name = data.get("coach_id")
+        
+
+        old_team = self.db.teams.find_one({"_id": oid(team_id)})
+        
+        stadium_doc = old_team.get("stadium") if old_team else {"name": "Unknown", "location": "Unknown", "capacity": 0}
+        if stadium_name and stadium_doc["name"] != stadium_name:
+             # Look for existing stadium details or reset
+             existing = self.db.teams.find_one({"stadium.name": stadium_name}, {"stadium": 1})
+             if existing:
+                 stadium_doc = existing.get("stadium")
+             else:
+                 stadium_doc = {"name": stadium_name, "location": "Unknown", "capacity": 0}
+
+        coach_doc = old_team.get("coach") if old_team else {"name": "Unknown", "nationalityId": None}
+        if coach_name and coach_doc.get("name") != coach_name:
+             existing = self.db.teams.find_one({"coach.name": coach_name}, {"coach": 1})
+             if existing:
+                 coach_doc = existing.get("coach")
+             else:
+                 # Need valid nationalityId
+                 first_country = self.db.countries.find_one()
+                 nid = first_country["_id"] if first_country else None
+                 coach_doc = {"name": coach_name, "nationalityId": nid}
+
+        update = {
+            "name": data.get("name"),
+            "foundedYear": int(data.get("founded_year") or 1900),
+            "stadium": stadium_doc,
+            "coach": coach_doc,
+        }
+        
+        self.db.teams.update_one({"_id": oid(team_id)}, {"$set": update})
+        return self.get_team(team_id)
+
+    def delete_team(self, team_id: str) -> bool:
+        self.db.teams.delete_one({"_id": oid(team_id)})
+        return True
+
+    def create_player(self, data: Payload):
+        doc = {
+            "name": data.get("name"),
+            "position": data.get("position"),
+            "dateOfBirth": datetime.now(),
+            "nationalityId": oid(data.get("nationality_id")) if data.get("nationality_id") else None,
+            "currentTeamId": oid(data.get("team_id")) if data.get("team_id") else None,
+        }
+        res = self.db.players.insert_one(doc)
+        return {**data, "id": str(res.inserted_id)}
+
+    def update_player(self, player_id: str, data: Payload):
+        update = {
+            "name": data.get("name"),
+            "position": data.get("position"),
+            "nationalityId": oid(data.get("nationality_id")) if data.get("nationality_id") else None,
+            "currentTeamId": oid(data.get("team_id")) if data.get("team_id") else None,
+        }
+        self.db.players.update_one({"_id": oid(player_id)}, {"$set": update})
+        return self.get_player(player_id)
+
+    def delete_player(self, player_id: str) -> bool:
+        self.db.players.delete_one({"_id": oid(player_id)})
+        return True
+
+    def create_match(self, data: Payload):
+        doc = {
+            "utcDate": datetime.fromisoformat(data.get("utc_date")) if data.get("utc_date") else datetime.now(),
+            "matchday": int(data.get("matchday") or 1),
+            "seasonId": oid(data.get("season_id")) if data.get("season_id") else None,
+            "homeTeamId": oid(data.get("home_team_id")),
+            "awayTeamId": oid(data.get("away_team_id")),
+            "score": {
+                "halfTime": {"home": 0, "away": 0},
+                "fullTime": {"home": 0, "away": 0},
+                "winner": None
+            },
+            "statistics": None,
+            "referees": []
+        }
+        res = self.db.matches.insert_one(doc)
+        return {**data, "id": str(res.inserted_id)}
+
+    def update_match(self, match_id: str, data: Payload):
+        update = {
+            "utcDate": datetime.fromisoformat(data.get("utc_date")) if data.get("utc_date") else datetime.now(),
+            "matchday": int(data.get("matchday") or 1),
+        }
+        if data.get("home_team_id"):
+            update["homeTeamId"] = oid(data.get("home_team_id"))
+        if data.get("away_team_id"):
+            update["awayTeamId"] = oid(data.get("away_team_id"))
+            
+        self.db.matches.update_one({"_id": oid(match_id)}, {"$set": update})
+        return self.get_match(match_id)
+
+    def delete_match(self, match_id: str) -> bool:
+        self.db.matches.delete_one({"_id": oid(match_id)})
+        return True
+
+    # Helper methods for form dropdowns
+    def list_countries(self) -> list[dict]:
+        out = []
+        for x in self.db.countries.find().sort("name", 1):
+             out.append({"id": str(x["_id"]), "name": x["name"]})
+        return out
+
+    def list_stadiums(self) -> list[dict]:
+
+        pipeline = [
+            {"$group": {"_id": "$stadium.name", "doc": {"$first": "$stadium"}}},
+            {"$sort": {"_id": 1}}
+        ]
+        out = []
+        for x in self.db.teams.aggregate(pipeline):
+             s = x.get("doc")
+             if s and s.get("name"):
+                 # Use name as ID because we don't have separate stadium IDs
+                 out.append({"id": s["name"], "name": s["name"], "location": s.get("location")})
+        return out
+
+    def list_coaches(self) -> list[dict]:
+
+        pipeline = [
+            {"$group": {"_id": "$coach.name", "doc": {"$first": "$coach"}}},
+            {"$lookup": {"from": "countries", "localField": "doc.nationalityId", "foreignField": "_id", "as": "nat"}},
+            {"$unwind": {"path": "$nat", "preserveNullAndEmptyArrays": True}},
+            {"$sort": {"_id": 1}}
+        ]
+        out = []
+        for x in self.db.teams.aggregate(pipeline):
+             c = x.get("doc")
+             if c and c.get("name"):
+                 nat_name = x.get("nat", {}).get("name", "")
+                 out.append({"id": c["name"], "name": c["name"], "nationality": nat_name})
+        return out
+
+    def list_seasons(self) -> list[dict]:
+        out = []
+
+        pipeline = [
+             {"$lookup": {"from": "leagues", "localField": "leagueId", "foreignField": "_id", "as": "league"}},
+             {"$unwind": {"path": "$league", "preserveNullAndEmptyArrays": True}},
+             {"$sort": {"year": -1}}
+        ]
+        for x in self.db.seasons.aggregate(pipeline):
+             x = str_id(x)
+             l_name = x.get("league", {}).get("name", "Unknown")
+             out.append({"id": x["id"], "year": x.get("year"), "league_name": l_name})
+        return out

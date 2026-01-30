@@ -4,13 +4,13 @@
 <h1>Drużyny</h1>
 
 <form method="get" class="row">
-  <input name="q" value="{{ q|default:'' }}" placeholder="Szukaj (nazwa/trener/stadion)...">
+  <input name="q" value="{{ q|default:'' }}" placeholder="Szukaj po nazwie drużyny...">
   <button type="submit">Szukaj</button>
 </form>
 
 <div class="card">
   <table>
-    <thead><tr><th>ID</th><th>Nazwa</th><th>Trener</th><th>Stadion</th><th></th></tr></thead>
+    <thead><tr><th>ID</th><th>Nazwa</th><th>Trener</th><th>Stadion</th><th class="actions-col"></th></tr></thead>
     <tbody>
     {% for t in items %}
       <tr>
@@ -18,7 +18,7 @@
         <td>{{ t.name }}</td>
         <td>{{ t.coach }}</td>
         <td>{{ t.stadium }}</td>
-        <td><a href="{% url 'team_detail' t.id %}">Szczegóły</a></td>
+        <td class="actions-cell"><a class="btn-action btn-view" href="{% url 'team_detail' t.id %}">Szczegóły</a></td>
       </tr>
     {% endfor %}
     </tbody>

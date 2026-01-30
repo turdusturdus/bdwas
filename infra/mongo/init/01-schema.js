@@ -76,7 +76,7 @@ db.createCollection("teams", {
   validator: {
     $jsonSchema: {
       bsonType: "object",
-      required: ["name", "foundedYear", "crestUrl", "countryId", "leagueId", "stadium", "coach"],
+      required: ["name", "foundedYear", "crestUrl", "countryId", "stadium", "coach"],
       additionalProperties: false,
       properties: {
         _id: { bsonType: "objectId" },
@@ -84,7 +84,7 @@ db.createCollection("teams", {
         foundedYear: { bsonType: "int", minimum: 1800, maximum: 2100 },
         crestUrl: { bsonType: "string" },
         countryId: { bsonType: "objectId" },
-        leagueId: { bsonType: "objectId" },
+        leagueId: { bsonType: ["objectId", "null"] },
         stadium: {
           bsonType: "object",
           required: ["name", "location", "capacity"],
@@ -101,7 +101,7 @@ db.createCollection("teams", {
           additionalProperties: false,
           properties: {
             name: { bsonType: "string", minLength: 1 },
-            nationalityId: { bsonType: "objectId" }
+            nationalityId: { bsonType: ["objectId", "null"] }
           }
         }
       }

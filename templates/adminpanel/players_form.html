@@ -5,12 +5,36 @@
 <form method="post" class="card form">
   {% csrf_token %}
   <label>Imię i nazwisko</label>
-  <input name="name" value="{{ item.name|default:'' }}">
+  <input name="name" value="{{ item.name|default:'' }}" placeholder="np. Robert Lewandowski" required>
+
+  <label>Drużyna</label>
+  <select name="team_id">
+    <option value="">-- Brak / Wolny agent --</option>
+    {% for t in teams %}
+      <option value="{{ t.id }}" {% if item.team_id == t.id %}selected{% endif %}>{{ t.name }}</option>
+    {% endfor %}
+  </select>
+
   <label>Pozycja</label>
-  <input name="position" value="{{ item.position|default:'' }}">
+  <select name="position" required>
+    <option value="">-- Wybierz pozycję --</option>
+    <option value="Goalkeeper" {% if item.position == 'Goalkeeper' %}selected{% endif %}>Bramkarz</option>
+    <option value="Defender" {% if item.position == 'Defender' %}selected{% endif %}>Obrońca</option>
+    <option value="Midfielder" {% if item.position == 'Midfielder' %}selected{% endif %}>Pomocnik</option>
+    <option value="Forward" {% if item.position == 'Forward' %}selected{% endif %}>Napastnik</option>
+  </select>
+
   <label>Narodowość</label>
-  <input name="nationality" value="{{ item.nationality|default:'' }}">
-  <button type="submit">Zapisz (atrapa)</button>
-  <a class="pill" href="{% url 'admin_players_list' %}">Wróć</a>
+  <select name="nationality_id">
+    <option value="">-- Wybierz narodowość --</option>
+    {% for c in countries %}
+      <option value="{{ c.id }}" {% if item.nationality_id == c.id %}selected{% endif %}>{{ c.name }}</option>
+    {% endfor %}
+  </select>
+
+  <div class="form-actions">
+    <button type="submit">Zapisz</button>
+    <a class="pill" href="{% url 'admin_players_list' %}">Wróć</a>
+  </div>
 </form>
 {% endblock %}

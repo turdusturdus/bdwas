@@ -5,6 +5,6 @@
 <div class="grid">
   <div class="card">Pozycja: <b>{{ player.position }}</b></div>
   <div class="card">Narodowość: <b>{{ player.nationality }}</b></div>
-  <div class="card">Drużyna: <b>{{ team.name }}</b></div>
+  <div class="card">Drużyna: <b>{% if team %}<a href="{% url 'team_detail' team.id %}">{{ team.name }}</a>{% else %}Brak{% endif %}</b></div>
 </div>
 {% endblock %}

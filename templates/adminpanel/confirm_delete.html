@@ -1,13 +1,17 @@
 {% extends "base.html" %}
 {% block title %}Usuń{% endblock %}
 {% block content %}
-<h1>Usuń: {{ entity }}</h1>
-<div class="card">
-  <p>Czy na pewno chcesz usunąć: <b>{{ item.name|default:item.id }}</b> ?</p>
-  <form method="post">
-    {% csrf_token %}
-    <button type="submit">Tak, usuń (atrapa)</button>
-    <a class="pill" href="{% url back_url %}">Anuluj</a>
-  </form>
+<div class="delete-confirm-wrapper">
+  <h1>Usuń: {{ entity }}</h1>
+  <div class="card delete-confirm-card">
+    <p>Czy na pewno chcesz usunąć: <b>{{ item.name|default:item.id }}</b>?</p>
+    <div class="confirm-actions">
+      <form method="post" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn-confirm-delete">Tak, usuń</button>
+      </form>
+      <a class="btn-confirm-cancel" href="{% url back_url %}">Anuluj</a>
+    </div>
+  </div>
 </div>
 {% endblock %}

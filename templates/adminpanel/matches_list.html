@@ -5,17 +5,17 @@
 <a class="pill" href="{% url 'admin_matches_new' %}">+ Dodaj mecz</a>
 <div class="card">
   <table>
-    <thead><tr><th>ID</th><th>Data</th><th>Kolejka</th><th>Mecz</th><th></th></tr></thead>
+    <thead><tr><th>ID</th><th>Data</th><th>Kolejka</th><th>Mecz</th><th class="actions-col">Akcje</th></tr></thead>
     <tbody>
     {% for m in items %}
       <tr>
         <td>{{ m.id }}</td>
-        <td>{{ m.utc_date }}</td>
+        <td>{{ m.utc_date|default:"-" }}</td>
         <td>{{ m.matchday }}</td>
         <td>{{ m.label }}</td>
-        <td>
-          <a href="{% url 'admin_matches_edit' m.id %}">Edytuj</a> |
-          <a href="{% url 'admin_matches_delete' m.id %}">Usuń</a>
+        <td class="actions-cell">
+          <a class="btn-action btn-edit" href="{% url 'admin_matches_edit' m.id %}">Edytuj</a>
+          <a class="btn-action btn-delete" href="{% url 'admin_matches_delete' m.id %}">Usuń</a>
         </td>
       </tr>
     {% endfor %}

@@ -5,10 +5,19 @@
 <form method="post" class="card form">
   {% csrf_token %}
   <label>Nazwa</label>
-  <input name="name" value="{{ item.name|default:'' }}" placeholder="np. Ekstraklasa">
+  <input name="name" value="{{ item.name|default:'' }}" placeholder="np. Ekstraklasa" required>
+
   <label>Kraj</label>
-  <input name="country" value="{{ item.country|default:'' }}" placeholder="np. Polska">
-  <button type="submit">Zapisz (atrapa)</button>
-  <a class="pill" href="{% url 'admin_leagues_list' %}">Wróć</a>
+  <select name="country_id" required>
+    <option value="">-- Wybierz kraj --</option>
+    {% for c in countries %}
+      <option value="{{ c.id }}" {% if item.country_id == c.id %}selected{% endif %}>{{ c.name }}</option>
+    {% endfor %}
+  </select>
+
+  <div class="form-actions">
+    <button type="submit">Zapisz</button>
+    <a class="pill" href="{% url 'admin_leagues_list' %}">Wróć</a>
+  </div>
 </form>
 {% endblock %}

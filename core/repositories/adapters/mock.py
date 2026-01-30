@@ -7,12 +7,9 @@ from .. import mock_repo
 
 
 class MockAdapter(LeagueRepo):
-    """
-    Adapter mock – działa na danych z mock_repo.
-    CRUD działa "w pamięci" (listy w module), żeby flow admina było gotowe.
-    """
+    """Mock adapter using in-memory list."""
 
-    # ---- Browse ----
+
     def list_leagues(self, *, q: Optional[str] = None, filters=None) -> Sequence[Mapping[str, Any]]:
         return mock_repo.list_leagues(q=q)
 
@@ -35,7 +32,7 @@ class MockAdapter(LeagueRepo):
         return mock_repo.team_players(team_id)
 
     def list_matches(self, *, q: Optional[str] = None, filters=None):
-        # zwracamy też label, żeby widoki były "głupie"
+
         out = []
         for m in mock_repo.list_matches(q=q):
             m2 = dict(m)
@@ -49,7 +46,7 @@ class MockAdapter(LeagueRepo):
     def match_label(self, match: Mapping[str, Any]) -> str:
         return mock_repo.match_label(match)
 
-    # ---- CRUD (in-memory) ----
+
     def _next_id(self, items, key="id") -> int:
         return (max((x.get(key, 0) for x in items), default=0) + 1)
 
@@ -135,7 +132,7 @@ class MockAdapter(LeagueRepo):
         return len(mock_repo.PLAYERS) != before
 
     def create_match(self, data: Payload):
-        # minimalnie, bo template i tak bazuje na get_match + score/statistics
+
         new_item = {
             "id": self._next_id(mock_repo.MATCHES),
             "utc_date": str(data.get("utc_date", "2025-01-01")),
@@ -163,3 +160,37 @@ class MockAdapter(LeagueRepo):
         before = len(mock_repo.MATCHES)
         mock_repo.MATCHES[:] = [x for x in mock_repo.MATCHES if x["id"] != match_id]
         return len(mock_repo.MATCHES) != before
+
+
+    def list_countries(self) -> list[dict]:
+
+        return [
+            {"id": 1, "name": "England"},
+            {"id": 2, "name": "Spain"},
+            {"id": 3, "name": "Poland"},
+            {"id": 4, "name": "Germany"},
+            {"id": 5, "name": "France"},
+            {"id": 6, "name": "Italy"},
+        ]
+
+    def list_stadiums(self) -> list[dict]:
+        return [
+            {"id": 1, "name": "Etihad Stadium", "location": "Manchester"},
+            {"id": 2, "name": "Anfield", "location": "Liverpool"},
+            {"id": 3, "name": "Old Trafford", "location": "Manchester"},
+            {"id": 4, "name": "Emirates Stadium", "location": "London"},
+        ]
+
+    def list_coaches(self) -> list[dict]:
+        return [
+            {"id": 1, "name": "Pep Guardiola", "nationality": "Spain"},
+            {"id": 2, "name": "Jurgen Klopp", "nationality": "Germany"},
+            {"id": 3, "name": "Erik ten Hag", "nationality": "Netherlands"},
+            {"id": 4, "name": "Mikel Arteta", "nationality": "Spain"},
+        ]
+
+    def list_seasons(self) -> list[dict]:
+        return [
+            {"id": 1, "year": "2023-2024", "league_name": "Premier League"},
+            {"id": 2, "year": "2024-2025", "league_name": "Premier League"},
+        ]

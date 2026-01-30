@@ -5,14 +5,30 @@
 <form method="post" class="card form">
   {% csrf_token %}
   <label>Nazwa</label>
-  <input name="name" value="{{ item.name|default:'' }}">
+  <input name="name" value="{{ item.name|default:'' }}" placeholder="np. FC Barcelona" required>
+
   <label>Rok założenia</label>
-  <input name="founded_year" value="{{ item.founded_year|default:'' }}">
+  <input name="founded_year" type="number" min="1800" max="2100" value="{{ item.founded_year|default:'' }}" placeholder="np. 1899">
+
   <label>Trener</label>
-  <input name="coach" value="{{ item.coach|default:'' }}">
+  <select name="coach_id">
+    <option value="">-- Brak / Nieznany --</option>
+    {% for c in coaches %}
+      <option value="{{ c.id }}" {% if item.coach_id == c.id %}selected{% endif %}>{{ c.name }}{% if c.nationality %} ({{ c.nationality }}){% endif %}</option>
+    {% endfor %}
+  </select>
+
   <label>Stadion</label>
-  <input name="stadium" value="{{ item.stadium|default:'' }}">
-  <button type="submit">Zapisz (atrapa)</button>
-  <a class="pill" href="{% url 'admin_teams_list' %}">Wróć</a>
+  <select name="stadium_id">
+    <option value="">-- Brak / Nieznany --</option>
+    {% for s in stadiums %}
+      <option value="{{ s.id }}" {% if item.stadium_id == s.id %}selected{% endif %}>{{ s.name }}{% if s.location %} - {{ s.location }}{% endif %}</option>
+    {% endfor %}
+  </select>
+
+  <div class="form-actions">
+    <button type="submit">Zapisz</button>
+    <a class="pill" href="{% url 'admin_teams_list' %}">Wróć</a>
+  </div>
 </form>
 {% endblock %}

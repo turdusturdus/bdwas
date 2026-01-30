@@ -2,13 +2,12 @@
 {% block title %}Logowanie{% endblock %}
 {% block content %}
 <h1>Logowanie</h1>
-<p class="muted">Atrapowe logowanie: wpisz <b>admin</b> jako username, żeby dostać rolę admin.</p>
 <form method="post" class="card form">
   {% csrf_token %}
-  <label>Username</label>
-  <input name="username" placeholder="np. admin albo user">
-  <label>Password</label>
-  <input name="password" type="password" placeholder="dowolne (atrapa)">
+  <label>Nazwa użytkownika</label>
+  <input name="username" placeholder="Login">
+  <label>Hasło</label>
+  <input name="password" type="password" placeholder="Hasło">
   <button type="submit">Zaloguj</button>
 </form>
 {% endblock %}

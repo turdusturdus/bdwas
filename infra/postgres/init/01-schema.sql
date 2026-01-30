@@ -6,20 +6,20 @@ CREATE TYPE public.score_result AS (
 );
 
 CREATE TABLE public.countries (
-    country_id integer NOT NULL PRIMARY KEY,
+    country_id SERIAL PRIMARY KEY,
     name character varying(255) NOT NULL UNIQUE,
     flag_url character varying(255)
 );
 
 CREATE TABLE public.stadiums (
-    stadium_id integer NOT NULL PRIMARY KEY,
+    stadium_id SERIAL PRIMARY KEY,
     name character varying(255) NOT NULL,
     location character varying(255) NOT NULL,
     capacity integer
 );
 
 CREATE TABLE public.users (
-    user_id integer NOT NULL PRIMARY KEY,
+    user_id SERIAL PRIMARY KEY,
     username character varying(255) NOT NULL UNIQUE,
     password character varying(255) NOT NULL,
     email character varying(255) NOT NULL UNIQUE,
@@ -27,19 +27,19 @@ CREATE TABLE public.users (
 );
 
 CREATE TABLE public.coaches (
-    coach_id integer NOT NULL PRIMARY KEY,
+    coach_id SERIAL PRIMARY KEY,
     name character varying(255) NOT NULL,
     nationality_id integer REFERENCES public.countries (country_id) ON DELETE SET NULL
 );
 
 CREATE TABLE public.referees (
-    referee_id integer NOT NULL PRIMARY KEY,
+    referee_id SERIAL PRIMARY KEY,
     name character varying(100),
     nationality_id integer REFERENCES public.countries (country_id) ON DELETE SET NULL
 );
 
 CREATE TABLE public.leagues (
-    league_id integer NOT NULL PRIMARY KEY,
+    league_id SERIAL PRIMARY KEY,
     name character varying(255) NOT NULL,
     country_id integer REFERENCES public.countries (country_id) ON DELETE RESTRICT,
     icon_url character varying(255),
@@ -50,14 +50,14 @@ CREATE TABLE public.leagues (
 );
 
 CREATE TABLE public.seasons (
-    season_id integer NOT NULL PRIMARY KEY,
+    season_id SERIAL PRIMARY KEY,
     league_id integer NOT NULL REFERENCES public.leagues (league_id) ON DELETE CASCADE,
     year character varying(9) NOT NULL,
     UNIQUE (league_id, year)
 );
 
 CREATE TABLE public.teams (
-    team_id integer NOT NULL PRIMARY KEY,
+    team_id SERIAL PRIMARY KEY,
     name character varying(255) NOT NULL UNIQUE,
     founded_year integer,
     stadium_id integer REFERENCES public.stadiums (stadium_id) ON DELETE SET NULL,
@@ -66,7 +66,7 @@ CREATE TABLE public.teams (
 );
 
 CREATE TABLE public.players (
-    player_id integer NOT NULL PRIMARY KEY,
+    player_id SERIAL PRIMARY KEY,
     team_id integer REFERENCES public.teams (team_id) ON DELETE SET NULL,
     name character varying(255) NOT NULL,
     "position" character varying(50),
@@ -75,7 +75,7 @@ CREATE TABLE public.players (
 );
 
 CREATE TABLE public.matches (
-    match_id integer NOT NULL PRIMARY KEY,
+    match_id SERIAL PRIMARY KEY,
     season_id integer NOT NULL REFERENCES public.seasons (season_id) ON DELETE CASCADE,
     matchday integer,
     home_team_id integer NOT NULL REFERENCES public.teams (team_id) ON DELETE RESTRICT,
@@ -87,7 +87,7 @@ CREATE TABLE public.matches (
 );
 
 CREATE TABLE public.scores (
-    score_id integer NOT NULL PRIMARY KEY,
+    score_id SERIAL PRIMARY KEY,
     match_id integer NOT NULL UNIQUE REFERENCES public.matches (match_id) ON DELETE CASCADE,
     full_time public.score_result,
     half_time public.score_result
@@ -101,7 +101,7 @@ CREATE TABLE public.match_referees (
 );
 
 CREATE TABLE public.standings (
-    standing_id integer NOT NULL PRIMARY KEY,
+    standing_id SERIAL PRIMARY KEY,
     season_id integer NOT NULL REFERENCES public.seasons (season_id) ON DELETE CASCADE,
     team_id integer NOT NULL REFERENCES public.teams (team_id) ON DELETE CASCADE,
     "position" integer NOT NULL,
@@ -118,7 +118,7 @@ CREATE TABLE public.standings (
 );
 
 CREATE TABLE public.scorers (
-    scorer_id integer NOT NULL PRIMARY KEY,
+    scorer_id SERIAL PRIMARY KEY,
     player_id integer NOT NULL REFERENCES public.players (player_id) ON DELETE CASCADE,
     season_id integer NOT NULL REFERENCES public.seasons (season_id) ON DELETE CASCADE,
     goals integer,

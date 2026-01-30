@@ -5,16 +5,16 @@
 <a class="pill" href="{% url 'admin_leagues_new' %}">+ Dodaj ligę</a>
 <div class="card">
   <table>
-    <thead><tr><th>ID</th><th>Nazwa</th><th>Kraj</th><th></th></tr></thead>
+    <thead><tr><th>ID</th><th>Nazwa</th><th>Kraj</th><th class="actions-col">Akcje</th></tr></thead>
     <tbody>
     {% for l in items %}
       <tr>
         <td>{{ l.id }}</td>
         <td>{{ l.name }}</td>
-        <td>{{ l.country }}</td>
-        <td>
-          <a href="{% url 'admin_leagues_edit' l.id %}">Edytuj</a> |
-          <a href="{% url 'admin_leagues_delete' l.id %}">Usuń</a>
+        <td>{{ l.country|default:"-" }}</td>
+        <td class="actions-cell">
+          <a class="btn-action btn-edit" href="{% url 'admin_leagues_edit' l.id %}">Edytuj</a>
+          <a class="btn-action btn-delete" href="{% url 'admin_leagues_delete' l.id %}">Usuń</a>
         </td>
       </tr>
     {% endfor %}
